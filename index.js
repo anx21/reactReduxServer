@@ -19,5 +19,21 @@ router(app);
 //Server
 const port = process.env.PORT || 3090;
 const server = http.createServer(app);
+const socket_io = require('socket.io');
+
 server.listen(port);
+
+var io = socket_io();
+io.attach(server);
+io.on('connection', function(socket){
+  console.log("Socket connected: " + socket.id);
+  socket.on('action', (action) => {
+    if(action.type === 'server/hello'){
+      console.log("Socket ID: " + socket.id);
+      console.log('Got hello data!', action.data);
+      socket.emit('action', {type:'message', data:'good day!'});
+    }
+  });
+});
+
 console.log('Server listening on:', port);
